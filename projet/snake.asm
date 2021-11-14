@@ -363,31 +363,31 @@ j newRandomObjectPosition
 
 getInputVal:
 lw $t0 0xffff0004
-li $t1 115
+li $t1 115                   # 's'
 beq $t0 $t1 GIhaut
-li $t1 122
+li $t1 122                   # 'z'
 beq $t0 $t1 GIbas
-li $t1 113
+li $t1 113                   # 'q'
 beq $t0 $t1 GIgauche
-li $t1 100
+li $t1 100                   # 'd'
 beq $t0 $t1 GIdroite
 li $v0 4
 j GIend
 
 GIhaut:
-li $v0 0
+li $v0 0                    # met 0 dans $v0 -> haut
 j GIend
 
 GIdroite:
-li $v0 1
+li $v0 1                   # met 1 dans $v0 -> droite
 j GIend
 
 GIbas:
-li $v0 2
+li $v0 2                   # met 2 dans $v0 -> bas
 j GIend
 
 GIgauche:
-li $v0 3
+li $v0 3                  # met 3 dans $v0 -> gauche
 
 GIend:
 jr $ra
@@ -470,7 +470,7 @@ snakeDir:      .word 1         # Direction du serpent: 0 (haut), 1 (droite)
 numObstacles:  .word 0         # Nombre actuel d'obstacle présent dans le jeu.
 obstaclesPosX: .word 0 : 1024  # Coordonnées X des obstacles
 obstaclesPosY: .word 0 : 1024  # Coordonnées Y des obstacles
-candy:         .word 5, 5      # Position du bonbon (X,Y)
+candy:         .word 0, 0      # Position du bonbon (X,Y)
 scoreJeu:      .word 0         # Score obtenu par le joueur
 
 .text
@@ -490,6 +490,8 @@ majDirection:
 
 # En haut, ... en bas, ... à gauche, ... à droite, ... ces soirées là ...
 
+jal getInputVal
+move $a0 $v0
 jr $ra
 
 ############################### updateGameStatus ###############################
