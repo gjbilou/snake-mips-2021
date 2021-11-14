@@ -433,8 +433,8 @@ sw $v1 candy + 4
 mainloop:
 
 jal getInputVal
-move $a0 $v0
-jal majDirection
+move $a0 $v0             # la direction du serpent a été mise a jour
+jal majDirection	 #
 jal updateGameStatus
 jal conditionFinJeu
 bnez $v0 gameOver
@@ -489,9 +489,27 @@ scoreJeu:      .word 0         # Score obtenu par le joueur
 majDirection:
 
 # En haut, ... en bas, ... à gauche, ... à droite, ... ces soirées là ...
+beq $a0 0,en_haut
+en_haut:
+addi  snakePosY,snakePosY,-1
+jr $ra
 
-jal getInputVal
-move $a0 $v0
+beq $a0 1,a_droite
+a_droite:
+addi snakePosX,snakePosX,1
+jr $ra
+
+beq $a0 2,en_bas
+en_bas:
+addi snakePosY,snakePosY,1
+jr $ra
+
+beq $a0 3,a_gauche
+a_gauche:
+addi snakePosX,snakePosX,-1
+jr $ra
+
+
 jr $ra
 
 ############################### updateGameStatus ###############################
@@ -506,7 +524,7 @@ jr $ra
 updateGameStatus:
 
 # jal hiddenCheatFunctionDoingEverythingTheProjectDemandsWithoutHavingToWorkOnIt
-
+jal main
 jr $ra
 
 ############################### conditionFinJeu ################################
