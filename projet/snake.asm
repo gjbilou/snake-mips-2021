@@ -147,17 +147,17 @@ jr $ra
 ################################################################################
 
 printSnake:
-subu $sp $sp 12
-sw $ra 0($sp)
-sw $s0 4($sp)
-sw $s1 8($sp)
+subu $sp $sp 12         # agrandit la pile de 3 cases  3*4octets=12
+sw $ra 0($sp)           # store contenu de $ra dans la premiere case de la pile ajoutée 0($sp)
+sw $s0 4($sp) 		# store contenu de $s0 dans la deuxieme case de la pile ajoutée 4($sp)
+sw $s1 8($sp)		# store contenu de $ra dans la troisieme case de la pile ajoutée 8($sp)
 
-lw $s0 tailleSnake
-sll $s0 $s0 2
-li $s1 0
+lw $s0 tailleSnake      #s0 contient la taille du serpent (intialisé a 1)
+sll $s0 $s0 2		#equivaut a multiplie la taille par 4
+li $s1 0		# met la valeur 0 dans $s1
 
-lw $a0 colors + greenV2
-lw $a1 snakePosX($s1)
+lw $a0 colors + greenV2  
+lw $a1 snakePosX($s1) 
 lw $a2 snakePosY($s1)
 jal printColorAtPosition
 li $s1 4
@@ -434,10 +434,10 @@ mainloop:
 
 jal getInputVal
 move $a0 $v0             # la direction du serpent a été mise a jour
-jal majDirection	 #
+jal majDirection	 
 jal updateGameStatus
 jal conditionFinJeu
-bnez $v0 gameOver
+bnez $v0 gameOver	# si conditionFinJeu retourne 0(çad met 0 dans $v0) -> gameOver
 jal printGame
 li $a0 500
 jal sleepMillisec
@@ -491,7 +491,7 @@ majDirection:
 # En haut, ... en bas, ... à gauche, ... à droite, ... ces soirées là ...
 beq $a0 0,en_haut
 en_haut:
-addi  snakePosY,snakePosY,-1
+lw snakePosY,snakePosY,-1
 jr $ra
 
 beq $a0 1,a_droite
