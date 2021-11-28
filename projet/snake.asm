@@ -485,32 +485,34 @@ scoreJeu:      .word 0         # Score obtenu par le joueur
 #                 en un unique tour de jeu. Cela s'apparente à du cannibalisme
 #                 et à été proscrit par la loi dans les sociétés reptiliennes.
 ################################################################################
+a0infs0:
+addi $a0, $a0, 2
+j resteMajDirection
+
+a0sups0:
+subi $a0, $a0, 2
+j resteMajDirection
+
+snakeDirModif:
+sw $a0, snakeDir
+j endMajDirection
 
 majDirection:
 
 # En haut, ... en bas, ... à gauche, ... à droite, ... ces soirées là ...
-beq $a0 0,en_haut
-en_haut:
-lw snakePosY,snakePosY,-1
-jr $ra
 
-beq $a0 1,a_droite
-a_droite:
-addi snakePosX,snakePosX,1
-jr $ra
-
-beq $a0 2,en_bas
-en_bas:
-addi snakePosY,snakePosY,1
-jr $ra
-
-beq $a0 3,a_gauche
-a_gauche:
-addi snakePosX,snakePosX,-1
+subi $sp, $sp, 4
+sw $s0, ($sp)
+lw $s0 , snakeDir
+blt $a0, 2, a0infs0
+bge $a0, 2, a0sups0
+resteMajDirection:
+bne $a0, $s0, snakeDirModif
+endMajDirection:
 jr $ra
 
 
-jr $ra
+
 
 ############################### updateGameStatus ###############################
 # Paramètres: Aucun
