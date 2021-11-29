@@ -364,9 +364,9 @@ j newRandomObjectPosition
 getInputVal:
 lw $t0 0xffff0004
 li $t1 115                   # 's'
-beq $t0 $t1 GIhaut
-li $t1 122                   # 'z'
 beq $t0 $t1 GIbas
+li $t1 122                   # 'z'
+beq $t0 $t1 GIhaut
 li $t1 113                   # 'q'
 beq $t0 $t1 GIgauche
 li $t1 100                   # 'd'
@@ -485,32 +485,23 @@ scoreJeu:      .word 0         # Score obtenu par le joueur
 #                 en un unique tour de jeu. Cela s'apparente à du cannibalisme
 #                 et à été proscrit par la loi dans les sociétés reptiliennes.
 ################################################################################
-a0infs0:
-addi $a0, $a0, 2
-j resteMajDirection
 
-a0sups0:
-subi $a0, $a0, 2
-j resteMajDirection
-
-snakeDirModif:
-sw $a0, snakeDir
-j endMajDirection
-
+ 
+  
 majDirection:
-
-# En haut, ... en bas, ... à gauche, ... à droite, ... ces soirées là ...
-
 subi $sp, $sp, 4
 sw $s0, ($sp)
-lw $s0 , snakeDir
-blt $a0, 2, a0infs0
-bge $a0, 2, a0sups0
-resteMajDirection:
-bne $a0, $s0, snakeDirModif
-endMajDirection:
-jr $ra
 
+lw $s0, snakeDir
+sub $s0, $a0, $s0 #$a0 - snakeDir >>> -2 | 2 ne fait rien 
+beq $s0, 2, endMajDirection
+beq $s0, -2, endMajDirection
+sw $a0, snakeDir
+
+endMajDirection:
+sw $sp, ($s0)
+addi $sp, $sp, 4
+jr $ra 
 
 
 
@@ -526,6 +517,7 @@ jr $ra
 updateGameStatus:
 
 # jal hiddenCheatFunctionDoingEverythingTheProjectDemandsWithoutHavingToWorkOnIt
+
 jal main
 jr $ra
 
