@@ -642,9 +642,9 @@ sw $v1, candy+4 #on donne la valeur Y genere a candy
 #on fait incrementer le nombres d'obstacles du jeu
 lw $s2, numObstacles
 addi $s2, $s2, 1
-sw $s2, numObstacles
-subi $s2, $s2, 1
-mul $s2, $s2, 4
+sw $s2, numObstacles # et on met a jour la variable nombres obstacles
+subi $s2, $s2, 1 # et puis on decrement le registre contenant le nombres d'obstacles (parce qu'on va l'utiliser pour la generation de nouveaux obstacles)
+mul $s2, $s2, 4 #on les multiplies par 4 octets
 
 
 #on genere un nouveau objet 
@@ -652,12 +652,12 @@ jal newRandomObjectPosition
 
 
 #on le mets dans la 1ere case du tableau  
-la $s1, obstaclesPosX
+la $s1, obstaclesPosX 
 la $s6, obstaclesPosY
-add $s1, $s1, $s2
-add $s6, $s6, $s2
-sw $v0, ($s1)
-sw $v1, ($s6)
+add $s1, $s1, $s2 #on ajoute a l'adresse du premier X d'obstacle le nombres d'obstacles  multiplie par 4 pour atteindre la derniere cellule vide
+add $s6, $s6, $s2 #on ajoute a l'adresse du premier Y d'obstacle le nombres d'obstacles  multiplie par 4 pour atteindre la derniere cellule vide
+sw $v0, ($s1) #on met a jour le contenu de ces adresses (et donc de la derniere case non rempli du tableau des X des obstacles)
+sw $v1, ($s6) #on met a jour le contenu de ces adresses (et donc de la derniere case non rempli du tableau des Y des obstacles)
 
 
 
