@@ -472,6 +472,7 @@ obstaclesPosX: .word 0 : 1024  # Coordonnées X des obstacles
 obstaclesPosY: .word 0 : 1024  # Coordonnées Y des obstacles
 candy:         .word 0, 0      # Position du bonbon (X,Y)
 scoreJeu:      .word 0         # Score obtenu par le joueur
+message_fin_game: .asciiz "Game Over. Votre score est de : "
 
 .text
 
@@ -666,11 +667,127 @@ jr $ra #retour a la fonction appelante
 # Retour: $v0 La valeur 0 si le jeu doit continuer ou toute autre valeur sinon.
 ################################################################################
 
+
+
+
+
+traverserTableObs:
+
+
+addi $s5, $s5, 4
+addi $s6, $s6, 4
+lw $s2, ($s5)
+lw $s3, ($s6)
+addi $s7, $s7, 1
+j verifObs
+
+
+traverserCorpsSnake:
+
+addi $s5, $s5, 4
+addi $s6, $s6, 4
+lw $s2, 4($s5)
+lw $s3, 4($s6)
+addi $s7 $s7 1
+j verifCorps
+
+
+
+
+error:
+li $v0, 1
+j endCFJ
+
+
+continue:
+
+li $v0 0
+j endCFJ
+
+
+
 conditionFinJeu:
+
+
+subi $sp, $sp, 36 #allocation de 9 case memoire dans la pile
+sw $s0, 32($sp) #sauvgarde de s0 dans la pile
+sw $s1, 28($sp) #sauvgarde de s1 dans la pile
+sw $s2, 24($sp) #sauvgarde de s2 dans la pile
+sw $s3, 20($sp) #sauvgarde de s3 dans la pile
+sw $s4, 16($sp) #sauvgarde de s4 dans la pile
+sw $s5, 12($sp) #sauvgarde de s5 dans la pile
+sw $s6, 8($sp) #sauvgarde de s6 dans la pile
+sw $s7, 4($sp) #sauvgarde de s7 dans la pile
+sw $ra, 0($sp) #sauvgarde de ra dans la pile
 
 # Aide: Remplacer cette instruction permet d'avancer dans le projet.
 li $v0 0
 
+
+
+
+
+lw $s0, snakePosX
+lw $s1, snakePosY
+
+la $s5, obstaclesPosX
+la $s6, obstaclesPosY
+lw $s2, ($s5)
+lw $s3, ($s6)
+lw $s4, numObstacles
+li $s7, 0
+
+
+#verifier si il touche le bord
+beq $s0, -1, error
+beq $s0, 16, error
+beq $s1, -1, error
+beq $s1, 16, error
+
+verifObs:
+#verifier s'il touche un obstacle 
+
+beq $s7, $s4, kk
+bne $s0, $s2, traverserTableObs
+bne $s1, $s3, traverserTableObs
+j error
+
+
+kk:
+
+lw $s0, snakePosX #valeur de X de la tete du snake
+lw $s1, snakePosY #valeur de Y de la tete du snake
+
+la $s5, snakePosX #@ de X de la tete du snake
+la $s6, snakePosY #@ de Y de la tete du snake
+lw $s2, 4($s5) #s2, va contenir le contenu de la 2 eme case suivant la tete X
+lw $s3, 4($s6) #s3, va contenir le contenu de la 2 eme case suivant la tete Y
+lw $s4, tailleSnake
+li $s7, 1
+
+
+
+verifCorps:
+#verifier s'il touche son corps
+beq $s7, $s4, continue
+
+bne $s0, $s2, traverserCorpsSnake
+bne $s1, $s3, traverserCorpsSnake
+j error
+
+
+
+endCFJ:
+lw $s0, 32($sp)
+lw $s1, 28($sp)
+lw $s2, 24($sp)
+lw $s3, 20($sp)
+lw $s4, 16($sp)
+lw $s5, 12($sp)
+lw $s6, 8($sp)
+lw $s7, 4($sp)
+lw $ra, 0($sp)
+addi $sp, $sp, 36 #desallocation memoire de la pile 
 jr $ra
 
 ############################### affichageFinJeu ################################
@@ -683,6 +800,26 @@ jr $ra
 
 affichageFinJeu:
 
+subi $sp, $sp, 12
+
+sw $v0, 8($sp)
+sw $a0, 4($sp)
+sw $ra, 0($sp)
 # Fin.
 
+
+
+la $a0, message_fin_game
+li $v0, 4
+syscall
+lw $a0, scoreJeu
+li $v0, 1
+syscall
+
+
+
+lw $v0, 8($sp)
+lw $a0, 4($sp)
+lw $ra, 0($sp)
+addi $sp, $sp, 12
 jr $ra
