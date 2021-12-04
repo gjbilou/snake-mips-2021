@@ -98,6 +98,8 @@ colors: .word 0x00000000, 0x00ff0000, 0xff00ff00, 0x00396239, 0x00ff00ff
 
 lastSnakePiece: .word 0, 0
 
+vitesse: .word 400
+
 .text
 j main
 
@@ -439,7 +441,7 @@ jal updateGameStatus
 jal conditionFinJeu
 bnez $v0 gameOver
 jal printGame
-li $a0 500
+lw $a0 vitesse
 jal sleepMillisec
 j mainloop
 
@@ -523,52 +525,52 @@ jr $ra #retour a la fonction appelante
 #updateGameStatus:
 
 # jal hiddenCheatFunctionDoingEverythingTheProjectDemandsWithoutHavingToWorkOnIt
-sD3:
-subi $s3, $s3, 1
-sw $s3, snakePosY
+sD3: #permet de changer les coordonnees de la tete dans le but de la faire bouger a gauche (donc Y-1) 
+subi $s3, $s3, 1 #on décrémente Y de 1
+sw $s3, snakePosY #on met a jour Y de la tete du snake
+j verifCandy #on passe a verification candy pour la suite du code
+
+sD1: #permet de changer les coordonnees de la tete dans le but de la faire bouger a gauche (donc Y+1)
+addi $s3, $s3, 1 #on incremente Y de 1
+sw $s3, snakePosY #on met a jour Y de la tete du snake
+j verifCandy #on passe a verification candy pour la suite du code
+
+sD0: #permet de changer les coordonnees de la tete dans le but de la faire bouger a gauche (donc X-1)
+subi $s2, $s2, 1 #on décrémente X de 1
+sw $s2, snakePosX #on met a jour X de la tete du snake
 j verifCandy
 
-sD1:
-addi $s3, $s3, 1
-sw $s3, snakePosY
-j verifCandy
-
-sD0:
-subi $s2, $s2, 1
-sw $s2, snakePosX
-j verifCandy
-
-sD2:
-addi $s2, $s2, 1
-sw $s2, snakePosX
-j verifCandy
+sD2: #permet de changer les coordonnees de la tete dans le but de la faire bouger a gauche (donc X+1)
+addi $s2, $s2, 1 #on incremente X de 1
+sw $s2, snakePosX #on met a jour X de la tete du snake
+j verifCandy #on passe a verification candy pour la suite du code
 
 decalX:
-move $s6, $s1
-mul $s6, $s6, 4
-add $s6, $s6, $s4
-lw $s7, -4($s6)
-sw $s7, ($s6)
+move $s6, $s1 #$s6 contient la valeur de tailleSnake
+mul $s6, $s6, 4 #on multiple la tailleSnake par 4 
+add $s6, $s6, $s4 #et on y ajoute l'@ de X de la tete du snake (qui est la premeiere valeur de ce tableau)
+lw $s7, -4($s6) #$s7 registre intermediaire qui permet de stocker la valeur de la derniere case du tableau des X 
+sw $s7, ($s6) #et puis on ecrit cette valeur a la case suivante (celle a droite)
 
-subi $s1, $s1, 1
+subi $s1, $s1, 1 #on décrémente la valeur de $s1 (tailleSnake) de 1
 
-beq $s1, 0,decalY 
+beq $s1, 0,decalY #on verifie si on a atteint la tete du tableau ou pas (pour ne pas continuer de decaler le reste de la memoire)
 
-j decalX
+j decalX #on loop vers decalX si $s1 n'est pas egal a 0
 
 decalY:
 la $s5, snakePosY #contient l'@ du premiere element des Y de snake
-move $s6, $t0
-mul $s6, $s6, 4
-add $s6, $s6, $s5
-lw $s7, -4($s6)
-sw $s7, ($s6)
+move $s6, $t0 #$s6 contient la valeur de tailleSnake
+mul $s6, $s6, 4  #on multiple la tailleSnake par 4 
+add $s6, $s6, $s5 #et on y ajoute l'@ de Y de la tete du snake (qui est la premeiere valeur de ce tableau)
+lw $s7, -4($s6) #on transfet la derniere valeur du tableau des Y vers le registre temporaire 
+sw $s7, ($s6) #on reprend cette valeur et on la mets a la case suivante (celle a droite)
 
-subi $t0, $t0, 1
+subi $t0, $t0, 1 #on décrémente la valeur de $t0 (tailleSnake) de 1  
 
-beq $t0, 0,bougerTete 
+beq $t0, 0,bougerTete #on verifie si on a atteint la tete du tableau ou pas et on passe (si la boucle a fini) a la bougerTete
 
-j decalY
+j decalY #puis on boucle vers decalY si $t0 n'est pas egal a 0
 
 
 updateGameStatus:
@@ -586,11 +588,11 @@ sw $ra, 0($sp) #sauvgarde de ra dans la pile
 
 
 #Corps de la fonction 
-lw $s0, snakeDir
-lw $s1, tailleSnake 
-lw $t0, tailleSnake
-lw $s2, snakePosX #X de la tete du snake
-lw $s3, snakePosY #Y de la tete du snake
+lw $s0, snakeDir #$s0 contient la valeur de snakeDir
+lw $s1, tailleSnake #$s1 contient la valeur de tailleSnake
+lw $t0, tailleSnake #$t0 contient la valeur de tailleSnake
+lw $s2, snakePosX #valeur de X de la tete du snake
+lw $s3, snakePosY #valeur de Y de la tete du snake
 
 la $s4, snakePosX #contient l'@ du premiere element des X de snake
 j decalX
@@ -605,40 +607,55 @@ beq $s0, 0, sD0 #si snakeDir est 0
 beq $s0, 2, sD2 #si snakeDir est 2
 
 
+
 verifCandy:
-lw $s1, tailleSnake
+#on reset les valeur des registres qu'on va utiliser pour ne pas utiliser des valeurs qui vont compromettre notre code
+lw $s1, tailleSnake 
 lw $s2, snakePosX
 lw $s3, snakePosY
 lw $s4, candy
 lw $s5, candy+4
 lw $s6, scoreJeu
-beq $s2, $s4, ajoutCandy
+beq $s2, $s4, ajoutCandy #on ajoute candy si la tete du snake est au coordonnees du snake actuelle
 j endUGS
 
 ajoutCandy:
-bne $s3, $s5, endUGS
-addi $s1, $s1, 1
-sw $s1, tailleSnake
-addi $s6, $s6, 1
-sw $s6, scoreJeu
+bne $s3, $s5, endUGS #on sort de la fonction si Y de la tete du snake ne correspond pas a Y du candy 
+addi $s1, $s1, 1 #incremente la taiile de snake de 1
+sw $s1, tailleSnake #on met a jour la variable tailleSnake
+addi $s6, $s6, 1 #on incremente le score du jeu de 1
+sw $s6, scoreJeu #on met a jour la variable scoreJeu
+#plus on mange de candy plus on diminue le retard (de sleepMillisec) et donc on fait augmenter la vitesse du snake (et donc la difficulte augmente)
+lw $s6, vitesse 
+subi $s6 , $s6 , 20 
+sw $s6, vitesse
 
-
+#les retours de la fonction newRandomObjectPosition
 # Retour: $v0 Position X du nouvel objet
 #         $v1 Position Y du nouvel objet
 
-jal newRandomObjectPosition
-sw $v0, candy
-sw $v1, candy+4
+jal newRandomObjectPosition #on genere un nouveau objet 
+sw $v0, candy #on donne la valeur X genere a candy 
+sw $v1, candy+4 #on donne la valeur Y genere a candy
 
+
+#on fait incrementer le nombres d'obstacles du jeu
 lw $s2, numObstacles
 addi $s2, $s2, 1
 sw $s2, numObstacles
+subi $s2, $s2, 1
+mul $s2, $s2, 4
 
 
+#on genere un nouveau objet 
 jal newRandomObjectPosition
 
+
+#on le mets dans la 1ere case du tableau  
 la $s1, obstaclesPosX
 la $s6, obstaclesPosY
+add $s1, $s1, $s2
+add $s6, $s6, $s2
 sw $v0, ($s1)
 sw $v1, ($s6)
 
@@ -649,7 +666,7 @@ sw $v1, ($s6)
 
 #Epilogue
 endUGS:
-
+#restauration des anciennes valeurs des registres $s
 lw $s0, 32($sp)
 lw $s1, 28($sp)
 lw $s2, 24($sp)
@@ -673,7 +690,7 @@ jr $ra #retour a la fonction appelante
 
 traverserTableObs:
 
-
+#boucle permettant de traverser le tableau des obstacles
 addi $s5, $s5, 4
 addi $s6, $s6, 4
 lw $s2, ($s5)
@@ -683,7 +700,7 @@ j verifObs
 
 
 traverserCorpsSnake:
-
+#boucle permettant de traverser le reste des coordonnees du corps du snake 
 addi $s5, $s5, 4
 addi $s6, $s6, 4
 lw $s2, 4($s5)
@@ -695,20 +712,19 @@ j verifCorps
 
 
 error:
+#erreur qui consiste en mettant une valeur differente de 0 dans $v0
 li $v0, 1
 j endCFJ
 
 
 continue:
-
+#continue qui consiste en remettant $v0 a 0 et de sauter a la fin de la fonction conditionFinJeu
 li $v0 0
 j endCFJ
 
 
 
 conditionFinJeu:
-
-
 subi $sp, $sp, 36 #allocation de 9 case memoire dans la pile
 sw $s0, 32($sp) #sauvgarde de s0 dans la pile
 sw $s1, 28($sp) #sauvgarde de s1 dans la pile
@@ -720,26 +736,26 @@ sw $s6, 8($sp) #sauvgarde de s6 dans la pile
 sw $s7, 4($sp) #sauvgarde de s7 dans la pile
 sw $ra, 0($sp) #sauvgarde de ra dans la pile
 
-# Aide: Remplacer cette instruction permet d'avancer dans le projet.
-li $v0 0
+li $v0 0 #initialisation du registre $v0 avec la valeur 0
 
 
 
 
 
-lw $s0, snakePosX
-lw $s1, snakePosY
+lw $s0, snakePosX #$s0 contient la valeur de X de la tete du snake
 
-la $s5, obstaclesPosX
-la $s6, obstaclesPosY
-lw $s2, ($s5)
-lw $s3, ($s6)
-lw $s4, numObstacles
-li $s7, 0
+lw $s1, snakePosY #$s1 contient la valeur de Y de la tete du snake
+
+la $s5, obstaclesPosX #$contient l'@ de X d'un obstacle 
+la $s6, obstaclesPosY #$contient l'@ de Y d'un obstacle 
+lw $s2, ($s5) #contient la valeur X d'un obstacle
+lw $s3, ($s6) #contient la valeur Y d'un obstacle
+lw $s4, numObstacles #contient la nombre total d'obstacles 
+li $s7, 0 #un compteur 
 
 
-#verifier si il touche le bord
-beq $s0, -1, error
+#verifier si il touche le bord et arreter le jeu si c'est le cas
+beq $s0, -1, error 
 beq $s0, 16, error
 beq $s1, -1, error
 beq $s1, 16, error
@@ -747,14 +763,15 @@ beq $s1, 16, error
 verifObs:
 #verifier s'il touche un obstacle 
 
-beq $s7, $s4, kk
-bne $s0, $s2, traverserTableObs
-bne $s1, $s3, traverserTableObs
-j error
+beq $s7, $s4, suitekk # si le compteur atteint le nombres d'obstacle passer a la derniere verifiction
+bne $s0, $s2, traverserTableObs #verifier si X de la tete du snake est egale a X de l'obstacle sinon  incremente l'adresse pointant vers les valeurs du tableau 
+bne $s1, $s3, traverserTableObs #verifier si Y de la tete du snake est egale a X de l'obstacle sinon  incremente l'adresse pointant vers les valeurs du tableau
+j error #si X et Y de la tete du snake sont egale aux coordonnees d'un obstacles donc declanche l'erreur
 
 
-kk:
-
+suitekk:
+#la suite des verification des erreur (verifier si le snake ne se mange pas lui meme)
+#redeclaration des valeurs des registres pour ne pas utiliser des registres precedement utilise dans une sous fonction
 lw $s0, snakePosX #valeur de X de la tete du snake
 lw $s1, snakePosY #valeur de Y de la tete du snake
 
@@ -762,22 +779,23 @@ la $s5, snakePosX #@ de X de la tete du snake
 la $s6, snakePosY #@ de Y de la tete du snake
 lw $s2, 4($s5) #s2, va contenir le contenu de la 2 eme case suivant la tete X
 lw $s3, 4($s6) #s3, va contenir le contenu de la 2 eme case suivant la tete Y
-lw $s4, tailleSnake
-li $s7, 1
+lw $s4, tailleSnake #$s4 contient la taille du snake
+li $s7, 1 #$s7 un compteur
 
 
 
 verifCorps:
 #verifier s'il touche son corps
-beq $s7, $s4, continue
+beq $s7, $s4, continue #continue le code si le compteur atteint taille snake
 
-bne $s0, $s2, traverserCorpsSnake
-bne $s1, $s3, traverserCorpsSnake
-j error
+bne $s0, $s2, traverserCorpsSnake #verifier si X de la tete du snake est egale a X d'une autre partie du corps du snake sinon  incremente l'adresse pointant vers les valeurs du tableau 
+bne $s1, $s3, traverserCorpsSnake ##verifier si Y de la tete du snake est egale a Y d'une autre partie du corps du snake sinon  incremente l'adresse pointant vers les valeurs du tableau 
+j error #si X et Y de la tete entre en contacte avec une autre partie du corps du snake declanche l'erreur
 
 
 
 endCFJ:
+#desallocation memoire apres restauration des anciennes valeurs des registres $s 
 lw $s0, 32($sp)
 lw $s1, 28($sp)
 lw $s2, 24($sp)
@@ -788,7 +806,7 @@ lw $s6, 8($sp)
 lw $s7, 4($sp)
 lw $ra, 0($sp)
 addi $sp, $sp, 36 #desallocation memoire de la pile 
-jr $ra
+jr $ra#retour a la fonciton appelante
 
 ############################### affichageFinJeu ################################
 # Paramètres: Aucun
@@ -799,27 +817,26 @@ jr $ra
 ################################################################################
 
 affichageFinJeu:
-
+#allocation d'espace memoire pour les registres $ra $a0 et $v0 
 subi $sp, $sp, 12
 
-sw $v0, 8($sp)
-sw $a0, 4($sp)
-sw $ra, 0($sp)
-# Fin.
+sw $v0, 8($sp) #sauvegarde de la valeur de $v0 dans la pile
+sw $a0, 4($sp) #sauvegarde de la valeur de $a0 dans la pile
+sw $ra, 0($sp) #sauvegarde de la valeur de $ra dans la pile
 
 
 
-la $a0, message_fin_game
-li $v0, 4
+
+la $a0, message_fin_game #on mets le message de fin de jeu dans $a0
+li $v0, 4 #on execute l'appel system 4 (pour afficher une chaine de caractere)
 syscall
-lw $a0, scoreJeu
-li $v0, 1
+lw $a0, scoreJeu #on mets le score du jeu dans $a0 
+li $v0, 1 #on execute l'appel system 1 (pour afficher un entier)
 syscall
 
-
-
+#restauration des anciennes valeurs des regitres $v0 $a0 et $ra
 lw $v0, 8($sp)
 lw $a0, 4($sp)
 lw $ra, 0($sp)
-addi $sp, $sp, 12
-jr $ra
+addi $sp, $sp, 12 #desallocation memoire
+jr $ra #retour a la fonction appelante
