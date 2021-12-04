@@ -627,7 +627,7 @@ addi $s6, $s6, 1 #on incremente le score du jeu de 1
 sw $s6, scoreJeu #on met a jour la variable scoreJeu
 #plus on mange de candy plus on diminue le retard (de sleepMillisec) et donc on fait augmenter la vitesse du snake (et donc la difficulte augmente)
 lw $s6, vitesse 
-subi $s6 , $s6 , 20 
+subi $s6 , $s6 , 10 
 sw $s6, vitesse
 
 #les retours de la fonction newRandomObjectPosition
