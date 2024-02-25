@@ -16,14 +16,14 @@ The Snake Game is a simple yet engaging game where the player controls a snake, 
 ### Starting MARS and Loading Your Program
 
 1. Open a terminal or command prompt.
-2. Navigate to the directory containing `Mars.jar` and your MIPS assembly program (e.g., `snake_game.asm`).
+2. Navigate to the directory containing `Mars.jar` and the `snake.asm` file.
 3. Run the following command to start MARS:
 
     ```bash
     java -jar Mars.jar
     ```
 
-4. Load the **snake_game.asm** source code through the File Menu.
+4. Load the **snake.asm** source code through the File Menu.
 
 ### Configuring the Bitmap Display
 
@@ -41,7 +41,7 @@ After opening MARS, you'll need to manually enable and configure the bitmap disp
 
 ### Setting Up the Keyboard and Display MMIO Simulator
 
-If your program requires keyboard input, follow these steps to enable the Keyboard and Display MMIO Simulator:
+Because snake is a game that requires keyboard input, we need to enable the Keyboard and Display MMIO Simulator:
 
 1. Go to the **Tools** menu.
 2. Select **Keyboard and Display MMIO Simulator**.
@@ -50,9 +50,9 @@ If your program requires keyboard input, follow these steps to enable the Keyboa
 
 This tool simulates keyboard input, allowing you to control the snake.
 
-### Running Your Program
+### Running the program
 
-With the bitmap display and keyboard MMIO configured, you can now assemble and run your MIPS program using the MARS interface:
+With the bitmap display and keyboard MMIO configured, you can now assemble and run the game using the MARS interface:
 
 1. Click on the **Assemble** button in the MARS toolbar to assemble your program.
 2. To run the program, click on the **Run** button.
