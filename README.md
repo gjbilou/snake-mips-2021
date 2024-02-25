@@ -13,7 +13,7 @@ The Snake Game is a simple yet engaging game where the player controls a snake, 
 
 ## Setup Instructions
 
-### Starting MARS and Loading Your Program
+### Starting MARS and Loading the Program
 
 1. Open a terminal or command prompt.
 2. Navigate to the directory containing `Mars.jar` and the `snake.asm` file.
@@ -50,7 +50,7 @@ Because snake is a game that requires keyboard input, we need to enable the Keyb
 
 This tool simulates keyboard input, allowing you to control the snake.
 
-### Running the program
+### Running the Program
 
 With the bitmap display and keyboard MMIO configured, you can now assemble and run the game using the MARS interface:
 
