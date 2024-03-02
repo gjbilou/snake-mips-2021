@@ -9,7 +9,7 @@ The Snake Game is a simple yet engaging game where the player controls a snake, 
 ## Prerequisites
 
 - Ensure Java is installed on your computer.
-- Download the MARS MIPS simulator (Mars.jar) from the official source.
+- Download the [MARS MIPS simulator](https://courses.missouristate.edu/kenvollmar/mars/) (Mars.jar) from the official source.
 
 ## Setup Instructions
 

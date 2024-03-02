@@ -9,7 +9,7 @@ Le Jeu du Snake est un jeu simple mais captivant où le joueur contrôle un serp
 ## Prérequis
 
 - Assurez-vous que Java est installé sur votre ordinateur.
-- Téléchargez le simulateur MIPS MARS (Mars.jar) depuis la source officielle.
+- Téléchargez le [simulateur MIPS MARS](https://courses.missouristate.edu/kenvollmar/mars/) (Mars.jar) depuis la source officielle.
 
 ## Instructions de configuration
 
