@@ -1,10 +1,10 @@
-# Jeu du Snake en Assemblage MIPS
+# Jeu du Snake en Assembleur MIPS
 
-Bienvenue dans le Jeu du Snake, un jeu d'arcade classique réimplémenté en langage d'assemblage MIPS. Ce projet démontre les capacités de la programmation en assemblage MIPS et offre une expérience pratique avec le développement logiciel de bas niveau et les concepts d'architecture informatique.
+Bienvenue dans le Jeu du Snake, un jeu d'arcade classique réimplémenté en langage d'assembleur MIPS. Ce projet démontre les capacités de la programmation en assembleur MIPS et offre une expérience pratique avec le développement logiciel de bas niveau et les concepts d'architecture informatique.
 
 ## Vue d'ensemble du projet
 
-Le Jeu du Snake est un jeu simple mais captivant où le joueur contrôle un serpent, le guidant pour manger de la nourriture tout en évitant les collisions avec les murs et sa propre queue. À mesure que le serpent mange, il s'allonge, augmentant la difficulté du jeu. Cette implémentation en assemblage MIPS fournit une version basique mais fonctionnelle du jeu, utilisant l'affichage bitmap du simulateur MARS et les E/S MMIO (Entrée/Sortie Mappée en Mémoire) pour le clavier et les graphismes.
+Le Jeu du Snake est un jeu simple mais captivant où le joueur contrôle un serpent, le guidant pour manger de la nourriture tout en évitant les collisions avec les murs et sa propre queue. À mesure que le serpent mange, il s'allonge, augmentant la difficulté du jeu. Cette implémentation en assembleur MIPS fournit une version basique mais fonctionnelle du jeu, utilisant l'affichage bitmap du simulateur MARS et les E/S MMIO (Entrée/Sortie Mappée en Mémoire) pour le clavier et les graphismes.
 
 ## Prérequis
 
